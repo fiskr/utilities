@@ -22,21 +22,8 @@ else
   read -p "What format would you like to convert to? (e.g. wav) > " toType
 fi
 
-function clearWhiteSpace(){
-  if find . -name "* *" -type d; then
-   echo "DEBUG: clearWhiteSpace() found: $(find . -name "* *" -type d)"
-   find . -name "* *" -type d | rename 's/ /_/g'
-  fi
-  if find . -name "* *" -type f; then
-    echo "DEBUG: clearWhiteSpace() found: $(find . -name "* *" -type f)"
-    find . -name "* *" -type f | rename 's/ /_/g'
-  fi
-}
-
-if [[ $directory =~ " " ]];then
-  cd "$directory"
-  cd ..
-  clearWhiteSpace
+if [[ "$directory" == *" "* ]]; then
+  rename 's/ /_/g' "$directory"
   directory="$(echo "$directory" | sed 's/ /_/g')"
 fi
 
@@ -44,6 +31,10 @@ echo "Converting from $fromType to $toType"
 
 cd "$directory"
 echo "Changed directory to $directory"
+
+if [[ $(find . -name "* *" -type f | wc -l) -gt 0 ]]; then
+  find . -name "* *" -type f | rename 's/ /_/g'
+fi
 
 mkdir -p $toType
 echo "Made new folder, $toType"
